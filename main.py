@@ -1,6 +1,5 @@
 from datetime import datetime
 from models import Product, User, Tag, ProductTag, Transaction
-from peewee import or_
 
 # Do not modify these lines
 __winc_id__ = "d7b474e9b3a54d23bca54879a4f1855b"
@@ -11,9 +10,8 @@ __human_name__ = "Betsy Webshop"
 
 def search_products(search_term):
     return Product.select().where(
-        or_(Product.name.contains(search_term), Product.description.contains(search_term))
+        (Product.name.contains(search_term)) | (Product.description.contains(search_term))
     )
-
 
 def list_user_products(user_id):
     return [product.name for product in Product.select().where(Product.user_id == user_id)]
@@ -48,8 +46,8 @@ def purchase_product(product_id, buyer_id, quantity):
 
 def populate_test_database():
     # Create users
-    user1 = User.create(username='user1', password='password1')
-    user2 = User.create(username='user2', password='password2')
+    user1 = User.create(username='user1', password='password1', address='address1')
+    user2 = User.create(username='user2', password='password2', address='address2')
 
     # Create products
     product1 = Product.create(name='product1', description='description1', price=10.0, quantity=5, user=user1)
