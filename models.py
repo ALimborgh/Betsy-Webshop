@@ -1,26 +1,17 @@
 from peewee import *
-from peewee import DateTimeField
+from peewee import DateTimeField, DecimalField, IntegerField, TextField, ForeignKeyField, CharField, Model, SqliteDatabase, Check
 from datetime import datetime
 
 db = SqliteDatabase('my_database.db')
 
 class User(Model):
     name = CharField()
+    email = CharField(unique=True)
     address = CharField()
     billing_info = CharField()
 
     class Meta:
         database = db
-
-class Product(Model):
-    user = ForeignKeyField(User, backref='products')
-    name = CharField()
-    description = TextField()
-
-    class Meta:
-        indexes = (
-            (('name', 'description'), False),
-        )
         
 class Product(Model):
     user = ForeignKeyField(User, backref='products')
@@ -28,12 +19,17 @@ class Product(Model):
     description = TextField()
     price_per_unit = DecimalField()
     quantity_in_stock = IntegerField()
+    is_active = BooleanField(default=True)
 
     class Meta:
         database = db
+        indexes = (
+            (('name', 'description'), False),
+        )
 
 class Tag(Model):
     name = CharField(unique=True)
+    description = TextField(null=True)
 
     class Meta:
         database = db
@@ -41,13 +37,10 @@ class Tag(Model):
 class ProductTag(Model):
     product = ForeignKeyField(Product, backref='product_tags')
     tag = ForeignKeyField(Tag, backref='product_tags')
-
+    created_at = DateTimeField(default=datetime.now)
+    
     class Meta:
         database = db
-        indexes = (
-            # Create a unique index on product/tag
-            (('product', 'tag'), True),
-        )
 
 class Transaction(Model):
     user = ForeignKeyField(User, backref='transactions')
@@ -58,6 +51,10 @@ class Transaction(Model):
 
     class Meta:
         database = db
+        indexes = (
+            (('user', 'timestamp'), False),
+            (('product', 'timestamp'), False),
+        )
 
 # Connect to the database
 db.connect()
@@ -67,6 +64,3 @@ db.drop_tables([User, Product, Tag, ProductTag, Transaction])
 
 # Create the tables
 db.create_tables([User, Product, Tag, ProductTag, Transaction])
-
-
-
