@@ -24,7 +24,7 @@ def list_products_per_tag(tag_id):
 
 def add_product_to_catalog(user_id, name, description, price_per_unit, quantity_in_stock):
     try:
-        # Assuming Product.select() and Product.create() are part of an ORM like Peewee
+        # Check if the product already exists for the user
         existing_product = Product.select().where(
             (Product.user == user_id) & (Product.name == name)
         ).first()
