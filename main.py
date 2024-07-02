@@ -1,5 +1,5 @@
 from peewee import *
-from models import Product, ProductTag, Transaction
+from models import Product, ProductTag, Transaction, User, Tag
 import logging
 
 # Do not modify these lines
@@ -86,4 +86,3 @@ def purchase_product(product_id, buyer_id, quantity):
     )
     
     return transaction.id
-
