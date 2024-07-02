@@ -1,7 +1,7 @@
 import unittest
 from peewee import SqliteDatabase
 from main import search_products, add_product_to_catalog, remove_product_from_user, update_stock, purchase_product, list_user_products, list_products_per_tag
-from models import Product, User, Tag, ProductTag, Transaction, populate_database
+from models import Product, User, Tag, ProductTag, Transaction
 
 class TestDatabaseOperations(unittest.TestCase):
     @classmethod
@@ -86,5 +86,4 @@ class TestDatabaseOperations(unittest.TestCase):
         
 if __name__ == '__main__':
     unittest.main()
-    populate_database()    
     
