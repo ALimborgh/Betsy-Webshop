@@ -1,5 +1,6 @@
 from peewee import *
 from models import Product, ProductTag, Transaction
+import logging
 
 # Do not modify these lines
 __winc_id__ = "d7b474e9b3a54d23bca54879a4f1855b"
@@ -21,16 +22,29 @@ def list_products_per_tag(tag_id):
     return [product.name for product in Product.select().join(ProductTag).where(ProductTag.tag == tag_id)]
 
 def add_product_to_catalog(user_id, name, description, price_per_unit, quantity_in_stock):
-    # Add a new product to the catalog for a user
-    new_product = Product.create(
-        user=user_id, 
-        name=name, 
-        description=description, 
-        price_per_unit=price_per_unit, 
-        quantity_in_stock=quantity_in_stock,
-        is_active=True 
-    )
-    return new_product.id
+    try:
+        # Assuming Product.select() and Product.create() are part of an ORM like Peewee
+        existing_product = Product.select().where(
+            (Product.user == user_id) & (Product.name == name)
+        ).first()
+
+        if existing_product:
+            logging.info(f"Product already exists for user_id {user_id}: {name}")
+            return "Product already exists for this user."
+
+        new_product = Product.create(
+            user=user_id, 
+            name=name, 
+            description=description, 
+            price_per_unit=price_per_unit, 
+            quantity_in_stock=quantity_in_stock,
+            is_active=True 
+        )
+        logging.info(f"Product added successfully: {new_product.id}")
+        return new_product.id
+    except Exception as e:
+        logging.error(f"Error adding product: {e}")
+        return "Error adding product"
 
 def remove_product_from_user(product_id, user_id):
     # Remove a product from a user's catalog
